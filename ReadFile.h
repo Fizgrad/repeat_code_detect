@@ -21,7 +21,7 @@ namespace llvm {
 
     const std::regex methodPattern = std::regex("dex_method_idx=(\\d+)");
 
-    const std::regex instPattern = std::regex(": [a-fA-F0-9]{8}");
+    const std::regex instPattern = std::regex("0x[a-fA-F0-9]{8}: [a-fA-F0-9]{8}");
 
     class ReadFile {
         std::ifstream file;
@@ -52,7 +52,7 @@ namespace llvm {
             return true;
         }
 
-        std::vector<unsigned> getNextFuctionCode();
+        std::vector<unsigned> getNextFunctionCode();
 
         LineType parseCurLine();
 
@@ -65,6 +65,8 @@ namespace llvm {
         unsigned getInstructionHashCode();
 
         std::string getInstructionString();
+
+        void testReadCode();
     };
 }
 

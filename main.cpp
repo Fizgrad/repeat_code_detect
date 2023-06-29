@@ -5,11 +5,12 @@
 using namespace llvm;
 
 int main() {
-    FindSimpleRepeat findSimpleRepeat("/home/david/Documents/Demo/cfa.txt");
-    for (int i = 0; i < 100; ++i) {
-        findSimpleRepeat.analysisNextFunction();
-    }
+    FindSimpleRepeat findSimpleRepeat("/home/david/Documents/Demo/data/cfa");
+    findSimpleRepeat.analysisAll();
 
-    findSimpleRepeat.writeToFile("/home/david/Documents/Demo/cfa_predict.txt");
+    findSimpleRepeat.writeToFile("/home/david/Documents/Demo/res/origin_out.txt");
+
+//    ReadFile file("/home/david/Documents/Demo/data/cfa");
+//    file.testReadCode();
     return 0;
 }

@@ -8,7 +8,7 @@
 using namespace llvm;
 
 void FindSimpleRepeat::analysisNextFunction() {
-    std::vector<unsigned> IntegerMapping = file.getNextFuctionCode();
+    std::vector<unsigned> IntegerMapping = file.getNextFunctionCode();
 
     codeCount += IntegerMapping.size();
     if (IntegerMapping.empty()) {
