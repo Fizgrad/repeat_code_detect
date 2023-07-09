@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include "Function.h"
 
 #ifndef SUFFIX_TREE_READFILE_H
 #define SUFFIX_TREE_READFILE_H
@@ -52,11 +53,9 @@ namespace llvm {
             return true;
         }
 
-        std::vector<unsigned> getNextFunctionCode();
+        Function getNextFunction();
 
         LineType parseCurLine();
-
-        std::string getMethodID();
 
         bool readNextLine();
 

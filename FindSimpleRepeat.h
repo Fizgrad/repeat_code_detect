@@ -5,6 +5,7 @@
 #include <iostream>
 #include "SuffixTree.h"
 #include "ReadFile.h"
+#include "Function.h"
 #include "SuffixTreeRepeatedInfos.h"
 #include <iomanip>
 

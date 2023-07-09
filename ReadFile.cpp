@@ -6,8 +6,10 @@
 
 using namespace llvm;
 
-std::vector<unsigned> ReadFile::getNextFunctionCode() {
-    std::vector<unsigned> res;
+Function ReadFile::getNextFunction() {
+    Function function;
+    function.methodID = methodId;
+    std::vector<unsigned> &res = function.codeHash;
     while (!checkIsEOF()) {
         readNextLine();
         LineType type = parseCurLine();
@@ -16,12 +18,13 @@ std::vector<unsigned> ReadFile::getNextFunctionCode() {
                 res.push_back(getInstructionMachineCode());
                 break;
             case LineType::FunctionInfo:
-                return res;
+                this->methodId =  curMatch[1].str();;
+                return function;
             default:
                 break;
         }
     }
-    return res;
+    return function;
 }
 
 LineType ReadFile::parseCurLine() {
@@ -43,10 +46,6 @@ bool ReadFile::readNextLine() {
     return false;
 }
 
-std::string ReadFile::getMethodID() {
-    std::string matchedStr = curMatch[1].str();
-    return std::move(matchedStr);
-}
 
 unsigned ReadFile::getInstructionMachineCode() {
     std::string matchedStr = curMatch[0].str().substr(12);
@@ -58,21 +57,6 @@ std::string ReadFile::getInstructionString() {
     return curLine.substr(pos + 1);
 }
 
-unsigned ReadFile::getInstructionHashCode() {
-    return 0;
-}
 
-void ReadFile::testReadCode() {
-    int count = 0;
-    getNextFunctionCode();
-    while (!checkIsEOF()) {
-        std::cout << "dex_method_" << getMethodID() << " count:\t";
-        std::vector<unsigned> codes = getNextFunctionCode();
-        std::cout << codes.size() << std::endl;
-        count += codes.size();
-    }
-    std::cout << "All Code:\t" << count << std::endl;
-
-}
 
 

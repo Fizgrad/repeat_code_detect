@@ -11,7 +11,7 @@ add_executable(suffix_tree
         SuffixTreeRepeatedInfos.cpp
         SuffixTreeRepeatedInfos.h ReadFile.cpp ReadFile.h
         FindSimpleRepeat.cpp
-        FindSimpleRepeat.h)
+        FindSimpleRepeat.h Function.cpp Function.h)
 
 
 

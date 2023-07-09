@@ -7,15 +7,31 @@
 
 using namespace llvm;
 
-void FindSimpleRepeat::analysisNextFunction() {
-    std::vector<unsigned> IntegerMapping = file.getNextFunctionCode();
+//void FindSimpleRepeat::analysisNextFunction() {
+//
+//
+//}
 
-    codeCount += IntegerMapping.size();
-    if (IntegerMapping.empty()) {
+void FindSimpleRepeat::analysisAll() {
+    std::vector<unsigned> AllCode;
+
+    while (!file.checkIsEOF()) {
+        Function function = file.getNextFunction();
+        std::vector<unsigned>&  IntegerMapping = function.codeHash;
+        if (IntegerMapping.empty())
+            continue;
+        for (auto i: IntegerMapping)
+            AllCode.push_back(i);
+        AllCode.push_back(static_cast<unsigned >(-1));
+    }
+
+    codeCount = AllCode.size();
+
+    if (AllCode.empty()) {
         return;
     }
     // 构造后缀树
-    SuffixTree ST(IntegerMapping);
+    SuffixTree ST(AllCode);
 
     // 从后缀树提取冗余信息
     RepeatedInfos ReptInfo(ST, 2);
@@ -24,7 +40,7 @@ void FindSimpleRepeat::analysisNextFunction() {
 
     // 打印提取到的冗余信息
     for (RepeatedInfos::RepeatedSubstringByS *RSS: NewRSList) {
-        RSS->print(IntegerMapping);
+        RSS->print(AllCode);
     }
 
     // 消除内部的冗余
@@ -32,22 +48,13 @@ void FindSimpleRepeat::analysisNextFunction() {
     RepeatedInfos::elimateInterOverlap(NewRSList, StrMap, 0);
 
     // 统计收益
-    unsigned NewTotalBenefit = 0;
     std::for_each(NewRSList.begin(), NewRSList.end(),
-                  [&NewTotalBenefit](RepeatedInfos::RepeatedSubstringByS *RS) {
-                      NewTotalBenefit += RS->getPredictBenefit(0);
+                  [&](RepeatedInfos::RepeatedSubstringByS *RS) {
+                      totalBenefit += RS->getPredictBenefit(0);
                       std::cout << "Test:" << RS->getPredictBenefit(0) << std::endl;
                   });
 
-    std::cout << "Predict Benefit:" << NewTotalBenefit << std::endl;
-    totalBenefit += NewTotalBenefit;
-
-}
-
-void FindSimpleRepeat::analysisAll() {
-    while (!file.checkIsEOF()) {
-        analysisNextFunction();
-    }
+    std::cout << "Predict Benefit:" << totalBenefit << std::endl;
 }
 
 void FindSimpleRepeat::writeToFile(const std::string &fileName) {
