@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "SuffixTree.h"
-#include "ReadFile.h"
+#include "File.h"
 #include "Function.h"
 #include "SuffixTreeRepeatedInfos.h"
 #include <iomanip>
@@ -15,7 +15,7 @@
 using namespace llvm;
 
 class FindSimpleRepeat {
-    ReadFile file;
+    File file;
     unsigned long long int codeCount = 0;
     unsigned long long int totalBenefit = 0;
 
@@ -23,7 +23,6 @@ public:
     explicit FindSimpleRepeat(const std::string &file) : file(file) {
     }
 
-    void analysisNextFunction();
 
     void analysisAll();
 

@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <iostream>
+#include "Block.h"
 
 using std::string;
 using std::vector;
@@ -16,8 +17,13 @@ class Function {
 public:
 
     string methodID;
-    int address;
-    vector<unsigned> codeHash;
+    unsigned long long int address;
+    vector<Block> basicBlocks;
+
+    explicit Function(string id, unsigned long long int address);
+
+    Function(const Function &function);
+
 
 };
 

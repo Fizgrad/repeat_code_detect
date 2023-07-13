@@ -7,25 +7,14 @@
 
 using namespace llvm;
 
-//void FindSimpleRepeat::analysisNextFunction() {
-//
-//
-//}
 
 void FindSimpleRepeat::analysisAll() {
-    std::vector<unsigned> AllCode;
 
-    while (!file.checkIsEOF()) {
-        Function function = file.getNextFunction();
-        std::vector<unsigned>&  IntegerMapping = function.codeHash;
-        if (IntegerMapping.empty())
-            continue;
-        for (auto i: IntegerMapping)
-            AllCode.push_back(i);
-        AllCode.push_back(static_cast<unsigned >(-1));
-    }
+    std::vector<unsigned> AllCode = file.getAllBasicBlockCode();
 
-    codeCount = AllCode.size();
+    codeCount = file.getAllBasicBlockCodeCount();
+
+    file.print();
 
     if (AllCode.empty()) {
         return;
@@ -63,6 +52,7 @@ void FindSimpleRepeat::writeToFile(const std::string &fileName) {
         if (!out.is_open()) {
             throw std::runtime_error("Unable to open file: " + fileName);
         }
+        out << "Basic Block Count : " << this->file.getNumOfBlocks() << std::endl << "Function Count : " << this->file.getNumOfFunctions() << std::endl;
         out << "Code Count : " << codeCount << std::endl << "Predict Benefits : " << totalBenefit << std::endl;
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
