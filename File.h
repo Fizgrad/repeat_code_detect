@@ -51,6 +51,10 @@ namespace llvm {
 
         unsigned long long getAllBasicBlockCodeCount();
 
+        vector<string> getAllInstructions();
+
+        vector<string> getAllInstructionsAddress();
+
         void print();
     };
 }

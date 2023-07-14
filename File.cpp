@@ -27,7 +27,7 @@ vector<unsigned> File::getAllBasicBlockCode() {
 
 
     if (this->functions.empty()) {
-        this->parseFile(1);
+        this->parseFile(false);
     }
     vector<unsigned int> res;
     for (auto &f: this->functions) {
@@ -36,7 +36,8 @@ vector<unsigned> File::getAllBasicBlockCode() {
                 res.push_back(i);
             }
 
-            // -1 代表后面的不是一条命令，只是用来分割的随机数
+            res.push_back(dist(engine));  // 生成随机数
+            // -1 代表前后都不是一条命令，只是用来分割的随机数
             res.push_back(-1);
             res.push_back(dist(engine));  // 生成随机数
         }
@@ -57,7 +58,8 @@ void File::parseFile(bool outputLog) {
             }
             std::string id = match[1];
             function = Function(id, 0);
-            std::cout << "Function " << id << " start" << std::endl;
+            if (outputLog)
+                std::cout << "Function " << id << " start" << std::endl;
         }
         if (std::regex_search(line, match, delimiterPattern)) {
             while (!checkIsEOF()) {
@@ -83,7 +85,7 @@ void File::parseFile(bool outputLog) {
 
 unsigned long long File::getNumOfBlocks() {
     if (this->functions.empty()) {
-        this->parseFile(1);
+        this->parseFile(false);
     }
     unsigned long long res = 0;
     for (auto &f: this->functions) {
@@ -98,7 +100,7 @@ unsigned long long File::getNumOfFunctions() {
 
 unsigned long long File::getAllBasicBlockCodeCount() {
     if (this->functions.empty()) {
-        this->parseFile(1);
+        this->parseFile(false);
     }
     unsigned long long res = 0;
     for (auto &f: this->functions) {
@@ -116,6 +118,42 @@ void File::print() {
             b.print();
         }
     }
+}
+
+vector<string> File::getAllInstructions() {
+    if (this->functions.empty()) {
+        this->parseFile(false);
+    }
+    vector<string> res;
+    for (auto &f: this->functions) {
+        for (auto &b: f.basicBlocks) {
+            for (auto &i: b.instructions) {
+                res.emplace_back(i);
+            }
+            res.emplace_back("");
+            res.emplace_back("");
+            res.emplace_back("");
+        }
+    }
+    return res;
+}
+
+vector<string> File::getAllInstructionsAddress() {
+    if (this->functions.empty()) {
+        this->parseFile(false);
+    }
+    vector<string> res;
+    for (auto &f: this->functions) {
+        for (auto &b: f.basicBlocks) {
+            for (auto &i: b.instructionAddress) {
+                res.emplace_back(i);
+            }
+            res.emplace_back("");
+            res.emplace_back("");
+            res.emplace_back("");
+        }
+    }
+    return res;
 }
 
 

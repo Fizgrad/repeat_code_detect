@@ -17,6 +17,7 @@
 #include "SuffixTree.h"
 #include <algorithm>
 #include <map>
+#include <string>
 #include <cmath>
 #include <vector>
 
@@ -58,6 +59,10 @@ namespace llvm {
             unsigned getPredictBenefit(unsigned CreateFuncOverHead) const;
 
             void print(const std::vector<unsigned> &Str);
+
+            void print(const std::vector<std::string> &Str);
+
+            void print(const std::vector<std::string> &Str, const std::vector<std::string> &Address);
         };
 
         // std::set<RepeatedSubstringByS> RSSet;

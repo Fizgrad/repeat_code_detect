@@ -22,17 +22,18 @@ public:
     unordered_set<int> successor;
     vector<unsigned> instructionBytecode;
     vector<string> instructions;
+    vector<string> instructionAddress;
 
 
     Block(string methodID, int blockID, unsigned long long int address);
 
     void addSuccessor(int id);
 
-    void addInstruction(unsigned bytecode, const string &instruction);
+    void addInstruction(const string &address, unsigned bytecode, const string &instruction);
 
     void addPredecessor(int id);
 
-    Block(const Block& block);
+    Block(const Block &block);
 
     void print();
 

@@ -21,7 +21,7 @@ using namespace llvm;
 
 unsigned RepeatedInfos::RepeatedSubstringByS::getPredictBenefit(
         unsigned CreateFuncOverHead) const {
-    if (StartIndices.empty() || StartIndices.size() < 2 || Length < 2) {
+    if (StartIndices.empty() || StartIndices.size() <= 2 || Length <= 2) { // < 2 change to <= 2
         return 0;
     }
     // Original:  Length*StartIndices.size()
@@ -41,9 +41,9 @@ void RepeatedInfos::RepeatedSubstringByS::print(
     std::vector<unsigned> RepeatStr;
     RepeatStr.insert(RepeatStr.end(), std::next(Str.begin(), StartIndices[0]),
                      std::next(Str.begin(), StartIndices[0] + StringLen));
-    std::cout << "\nLen:\t" << Length << "\tRS:\t";
+    std::cout << "Len:\t" << Length << "\tRS:\t\n\n";
     for (auto Via: RepeatStr) {
-        std::cout <<std::hex<< Via << " " << std::dec;
+        std::cout << std::hex << Via << " " << std::dec;
     }
     std::cout << "\nIndices:\t";
     for (unsigned SI: StartIndices) {
@@ -83,6 +83,42 @@ bool RepeatedInfos::RepeatedSubstringByS::operator==(
         }
     }
     return false;
+}
+
+void RepeatedInfos::RepeatedSubstringByS::print(const std::vector<std::string> &Str,
+                                                const std::vector<std::string> &Address) {
+    unsigned StringLen = Length;
+    std::vector<std::string> RepeatStr;
+    RepeatStr.insert(RepeatStr.end(), std::next(Str.begin(), StartIndices[0]),
+                     std::next(Str.begin(), StartIndices[0] + StringLen));
+    std::cout << "Len:\t" << Length << "\tRS:\t\n\n";
+    for (auto &Via: RepeatStr) {
+        std::cout <<"\t"<< Via << "\n";
+    }
+    std::cout << "\nIndices:\t";
+    for (unsigned SI: StartIndices) {
+        std::cout << std::hex << Address[SI] << " " << std::dec;
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
+}
+
+
+void RepeatedInfos::RepeatedSubstringByS::print(const std::vector<std::string> &Str) {
+    unsigned StringLen = Length;
+    std::vector<std::string> RepeatStr;
+    RepeatStr.insert(RepeatStr.end(), std::next(Str.begin(), StartIndices[0]),
+                     std::next(Str.begin(), StartIndices[0] + StringLen));
+    std::cout << "Len:\t" << Length << "\tRS:\t\n\n";
+    for (auto &Via: RepeatStr) {
+        std::cout <<"\t"<< Via << "\n";
+    }
+    std::cout << "\nIndices:\t";
+    for (unsigned SI: StartIndices) {
+        std::cout << SI << " ";
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
 }
 
 bool RepeatedInfos::isOverlap(std::vector<unsigned> &SuffixIndices,
