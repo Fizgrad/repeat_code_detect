@@ -41,13 +41,13 @@ void FindSimpleRepeat::analysisAll() {
 
     // 消除内部的冗余
     std::vector<unsigned> StrMap = ST.Str;
-    RepeatedInfos::elimateInterOverlap(NewRSList, StrMap, 2);
+    RepeatedInfos::elimateInterOverlap(NewRSList, StrMap, -2);
 
     // 统计收益
     std::for_each(NewRSList.begin(), NewRSList.end(),
                   [&](RepeatedInfos::RepeatedSubstringByS *RS) {
-                      totalBenefit += RS->getPredictBenefit(2);
-                      std::cout << "Test:" << RS->getPredictBenefit(2) << std::endl;
+                      totalBenefit += RS->getPredictBenefit(-2);
+                      std::cout << "Test:" << RS->getPredictBenefit(-2) << std::endl;
                   });
 
     std::cout << "Predict Benefit:" << totalBenefit << std::endl;
