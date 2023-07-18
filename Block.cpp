@@ -13,7 +13,7 @@ const std::regex IDPattern = std::regex("ID:\t(\\d+)");
 const std::regex AddressPattern = std::regex("Address:\t(0x[a-fA-F0-9]{8})");
 const std::regex PredecessorPattern = std::regex("Predecessor:\t(\\d+)");
 const std::regex SuccessorPattern = std::regex("Successor:\t(\\d+)");
-const std::regex CodePattern = std::regex("\t(0x[a-fA-F0-9]{8}):\t([a-fA-F0-9]{8})\t(.*)");
+const std::regex CodePattern = std::regex("\t(0x[a-fA-F0-9]{8}):\t([a-fA-F0-9]{8})\t([a-fA-F0-9]{8})\t(.*)");
 
 
 Block::Block(std::string methodID, int blockID, unsigned long long address) : methodID(std::move(methodID)),
@@ -30,10 +30,12 @@ void Block::addPredecessor(int id) {
     this->predecessor.insert(id);
 }
 
-void Block::addInstruction(const string &address, unsigned int bytecode, const string &instruction) {
+void
+Block::addInstruction(const string &address, unsigned int bytecode, unsigned int hashcode, const string &instruction) {
     this->instructionBytecode.emplace_back(bytecode);
     this->instructions.emplace_back(instruction);
     this->instructionAddress.emplace_back(address);
+    this->instructionHash.emplace_back(hashcode);
 }
 
 Block::Block(const Block &block) : methodID(block.methodID), blockID(block.blockID), address(block.address) {
@@ -42,6 +44,7 @@ Block::Block(const Block &block) : methodID(block.methodID), blockID(block.block
     for (auto i: block.instructionBytecode) this->instructionBytecode.push_back(i);
     for (auto &i: block.instructions) this->instructions.push_back(i);
     for (auto &i: block.instructionAddress) this->instructionAddress.push_back(i);
+    for (auto &i: block.instructionHash) this->instructionHash.push_back(i);
 
 }
 
@@ -61,7 +64,8 @@ void Block::print() {
 
     std::cout << "Code:" << std::endl;
     for (int i = 0; i < instructionBytecode.size(); ++i) {
-        std::cout << "\t" << instructionBytecode[i] << "\t" << instructions[i] << std::endl;
+        std::cout << "\t" << instructionBytecode[i] << "\t" << instructions[i] << "\t" << instructionHash[i]
+                  << std::endl;
     }
 
     std::cout << "---------------------------" << std::endl;
@@ -102,8 +106,10 @@ Block parseBlock(const string &methodID, vector<string> &inputs) {
         else if (std::regex_search(input, match, CodePattern)) {
             std::string codeAddress = match[1];
             std::string codeValue = match[2];
-            std::string codeString = match[3];
-            res.addInstruction(codeAddress, std::stoul(codeValue, nullptr, 16), codeString);
+            std::string hash = match[3];
+            std::string codeString = match[4];
+            res.addInstruction(codeAddress, std::stoul(codeValue, nullptr, 16), std::stoul(hash, nullptr, 16),
+                               codeString);
         }
 
     }

@@ -21,7 +21,7 @@ using namespace llvm;
 
 unsigned RepeatedInfos::RepeatedSubstringByS::getPredictBenefit(
         unsigned CreateFuncOverHead) const {
-    if (StartIndices.empty() || StartIndices.size() <= 2 || Length <= 2) { // < 2 change to <= 2
+    if (StartIndices.empty() || StartIndices.size() < 2 || Length < 2) {
         return 0;
     }
     // Original:  Length*StartIndices.size()

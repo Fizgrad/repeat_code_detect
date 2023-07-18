@@ -156,4 +156,29 @@ vector<string> File::getAllInstructionsAddress() {
     return res;
 }
 
+vector<unsigned> File::getAllInstructionsHash() {
+    std::random_device rd;  // 用于生成种子
+    std::mt19937 engine(rd());  // 随机数引擎
+    std::uniform_int_distribution<unsigned> dist(0, std::numeric_limits<unsigned>::max());  // 范围限定为 unsigned 的最大值
+
+
+    if (this->functions.empty()) {
+        this->parseFile(false);
+    }
+    vector<unsigned int> res;
+    for (auto &f: this->functions) {
+        for (auto &b: f.basicBlocks) {
+            for (auto &i: b.instructionHash) {
+                res.push_back(i);
+            }
+
+            res.push_back(dist(engine));  // 生成随机数
+            // -1 代表前后都不是一条命令，只是用来分割的随机数
+            res.push_back(-1);
+            res.push_back(dist(engine));  // 生成随机数
+        }
+    }
+    return res;
+}
+
 

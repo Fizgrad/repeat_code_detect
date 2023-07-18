@@ -21,6 +21,7 @@ public:
     unordered_set<int> predecessor;
     unordered_set<int> successor;
     vector<unsigned> instructionBytecode;
+    vector<unsigned> instructionHash;
     vector<string> instructions;
     vector<string> instructionAddress;
 
@@ -29,7 +30,7 @@ public:
 
     void addSuccessor(int id);
 
-    void addInstruction(const string &address, unsigned bytecode, const string &instruction);
+    void addInstruction(const string &address, unsigned bytecode,unsigned int hashcode, const string &instruction);
 
     void addPredecessor(int id);
 

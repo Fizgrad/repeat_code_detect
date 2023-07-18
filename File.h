@@ -53,6 +53,8 @@ namespace llvm {
 
         vector<string> getAllInstructions();
 
+        vector<unsigned> getAllInstructionsHash();
+
         vector<string> getAllInstructionsAddress();
 
         void print();
