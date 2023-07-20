@@ -13,7 +13,7 @@ const std::regex CodeOffsetPattern = std::regex("(code_offset=)(0x[a-fA-F0-9]{8}
 
 std::string convertHexString(const std::string &input) {
     std::string result;
-    for (int i = input.length() - 2; i >= 0; i -= 2) {
+    for (int i = static_cast<int>(input.length() - 2); i >= 0; i -= 2) {
         std::string byteString = input.substr(i, 2);
         char byteChar = static_cast<char>(std::stoi(byteString, nullptr, 16));
         result.push_back(byteChar);
@@ -30,7 +30,7 @@ bool File::readNextLine(string &line) {
     return false;
 }
 
-std::pair<ControlFlowGraph, string> File::nextFunctionCode(string methodID) {
+Function File::nextFunction() {
     ControlFlowGraph controlFlowGraph;
     controlFlowGraph.methodID = methodID;
     string line;
@@ -38,13 +38,13 @@ std::pair<ControlFlowGraph, string> File::nextFunctionCode(string methodID) {
         std::smatch match;
 
         if (std::regex_search(line, match, InstructionPattern)) {
-            controlFlowGraph.code.append(convertHexString(match[3]));
+            controlFlowGraph.bytecode.append(convertHexString(match[3]));
         } else if (std::regex_search(line, match, MethodPattern)) {
             if (controlFlowGraph.methodID.empty()) {
                 controlFlowGraph.methodID = match[2];
             } else {
                 methodID = match[2];
-                return {controlFlowGraph, methodID};
+                return controlFlowGraph.buildCFG();
             }
         } else if (std::regex_search(line, match, CodeOffsetPattern)) {
             controlFlowGraph.methodCodeOffset = match[2];
@@ -52,6 +52,12 @@ std::pair<ControlFlowGraph, string> File::nextFunctionCode(string methodID) {
             continue;
         }
     }
-    return {controlFlowGraph, methodID};
+    return controlFlowGraph.buildCFG();
+}
+
+void File::parseFile() {
+    while (!checkIsEOF()) {
+        program.funtions.emplace_back(nextFunction());
+    }
 }
 

@@ -10,13 +10,12 @@ using namespace llvm;
 
 void FindSimpleRepeat::analysisAll() {
 
-    std::vector<unsigned> AllCode = file.getAllBasicBlockCode();
 
-    codeCount = file.getAllBasicBlockCodeCount();
+    std::vector<unsigned> AllCode = file.program.getAllBytes();
 
-    vector<string> allInstructionString = file.getAllInstructions();
+    codeCount = file.program.getCodeCount();
 
-    vector<string> allInstructionAddress = file.getAllInstructionsAddress();
+    vector<Instruction> instructions = file.program.getAllInstructions();
 
 //    std::cout << allInstructionAddress.size() << " " << allInstructionString.size() << " " << AllCode.size()
 //              << std::endl;
@@ -40,7 +39,7 @@ void FindSimpleRepeat::analysisAll() {
 
     // 打印提取到的冗余信息
     for (RepeatedInfos::RepeatedSubstringByS *RSS: NewRSList) {
-        RSS->print(allInstructionString,allInstructionAddress);
+        RSS->print(instructions);
     }
 
 
@@ -58,13 +57,12 @@ void FindSimpleRepeat::analysisAll() {
 
 void FindSimpleRepeat::analysisHash() {
 
-    std::vector<unsigned> AllCode = file.getAllInstructionsHash();
+    std::vector<unsigned> AllCode = file.program.getAllHashCode();
 
-    codeCount = file.getAllBasicBlockCodeCount();
+    codeCount = file.program.getCodeCount();
 
-    vector<string> allInstructionString = file.getAllInstructions();
+    vector<Instruction> instructions = file.program.getAllInstructions();
 
-    vector<string> allInstructionAddress = file.getAllInstructionsAddress();
 
 //    std::cout << allInstructionAddress.size() << " " << allInstructionString.size() << " " << AllCode.size()
 //              << std::endl;
@@ -88,7 +86,7 @@ void FindSimpleRepeat::analysisHash() {
 
     // 打印提取到的冗余信息
     for (RepeatedInfos::RepeatedSubstringByS *RSS: NewRSList) {
-        RSS->print(allInstructionString, allInstructionAddress);
+        RSS->print(instructions);
     }
 
     // 统计收益
@@ -107,8 +105,8 @@ void FindSimpleRepeat::writeToFile(const std::string &fileName) {
         if (!out.is_open()) {
             throw std::runtime_error("Unable to open file: " + fileName);
         }
-        out << "Basic Block Count : " << this->file.getNumOfBlocks() << std::endl << "Function Count : "
-            << this->file.getNumOfFunctions() << std::endl;
+        out << "Basic Block Count : " << this->file.program.getNumOfBlocks() << std::endl << "Function Count : "
+            << this->file.program.getNumOfFunctions() << std::endl;
         out << "Code Count : " << codeCount << std::endl << "Predict Benefits : " << totalBenefit << std::endl;
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;

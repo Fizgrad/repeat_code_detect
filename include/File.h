@@ -1,6 +1,10 @@
 //
 // Created by David Chen on 6/22/23.
 //
+
+#ifndef SUFFIX_TREE_READFILE_H
+#define SUFFIX_TREE_READFILE_H
+
 #include <regex>
 #include <iostream>
 #include <fstream>
@@ -10,15 +14,14 @@
 #include <vector>
 #include "ControlFlowGraph.h"
 #include "Function.h"
-
-#ifndef SUFFIX_TREE_READFILE_H
-#define SUFFIX_TREE_READFILE_H
-
+#include "Program.h"
 
 class File {
-    std::ifstream file;
 
 public:
+    std::ifstream file;
+    Program program;
+
     explicit File(const std::string &inputFile) : file(inputFile) {
         if (!file.is_open()) {
             std::cerr << "unable to open file " << std::endl;
@@ -30,6 +33,11 @@ public:
             file.close();
     }
 
+    void parseFile();
+
+private:
+
+    string methodID;
 
     bool checkIsEOF() {
         if (file.is_open()) {
@@ -39,7 +47,7 @@ public:
         return true;
     }
 
-    std::pair<ControlFlowGraph,string> nextFunctionCode(string methodID);
+    Function nextFunction();
 
     bool readNextLine(string &line);
 

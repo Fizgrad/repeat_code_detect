@@ -9,6 +9,15 @@
 
 void Instruction::parse(csh handle, cs_insn *insn) {
     cs_detail *detail = insn->detail;
+    this->address = insn->address;
+    this->id = insn->id;
+
+    auto bytesLen = insn->size;
+    for (int i = 0; i < bytesLen; ++i) {
+        this->bytecode |= (insn->bytes[i] << (8 * i));
+    }
+    this->mnemonic = string(insn->mnemonic);
+
     if (detail->arm64.op_count)
         this->operandsCount = detail->arm64.op_count;
 
@@ -17,16 +26,16 @@ void Instruction::parse(csh handle, cs_insn *insn) {
         switch (op->type) {
             case ARM64_OP_REG:
 //                printf("\t\toperands[%u].type: REG = %s\n", n, cs_reg_name(handle, op->reg));
-                this->regs.emplace_back(cs_reg_name(handle, op->reg));
+                this->regs.insert(cs_reg_name(handle, op->reg));
 
                 break;
             case ARM64_OP_MEM:
 //                printf("\t\toperands[%u].type: MEM\n", n);
                 if (op->mem.base != ARM64_REG_INVALID)
-                    this->regs.emplace_back(cs_reg_name(handle, op->mem.base));
+                    this->regs.insert(cs_reg_name(handle, op->mem.base));
 //                    printf("\t\t\toperands[%u].mem.base: REG = %s\n", n, cs_reg_name(handle, op->mem.base));
                 if (op->mem.index != ARM64_REG_INVALID)
-                    this->regs.emplace_back(cs_reg_name(handle, op->mem.index));
+                    this->regs.insert(cs_reg_name(handle, op->mem.index));
 //                    printf("\t\t\toperands[%u].mem.index: REG = %s\n", n, cs_reg_name(handle, op->mem.index));
 
             default:
@@ -37,4 +46,26 @@ void Instruction::parse(csh handle, cs_insn *insn) {
 
 Instruction::Instruction(csh handle, cs_insn *insn) {
     this->parse(handle, insn);
+    calculateHashcode();
+}
+
+Instruction::Instruction(const Instruction &instruction) : bytecode(instruction.bytecode),
+                                                           address(instruction.address),
+                                                           hashcode(instruction.hashcode),
+                                                           id(instruction.id),
+                                                           operandsCount(instruction.operandsCount),
+                                                           mnemonic(instruction.mnemonic),
+                                                           regs(instruction.regs) {
+
+}
+
+
+void Instruction::calculateHashcode() {
+    hashcode = bytecode;
+    for (auto &i: regs) {
+        auto reg = parseReg(i);
+        if (reg.size() == 2 && isalnum(reg[0]) && isalnum(reg[1])) {
+            hashcode = changeRegName(hashcode, std::stoi(reg), 0);
+        }
+    }
 }

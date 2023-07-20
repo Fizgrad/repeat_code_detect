@@ -15,6 +15,7 @@
 #define LLVM_SUPPORT_SUFFIXTREE_REPEATED_INFOS_H
 
 #include "SuffixTree.h"
+#include "Instruction.h"
 #include <algorithm>
 #include <map>
 #include <string>
@@ -60,9 +61,8 @@ namespace llvm {
 
             void print(const std::vector<unsigned> &Str);
 
-            void print(const std::vector<std::string> &Str);
+            void print(const std::vector<Instruction> &inst);
 
-            void print(const std::vector<std::string> &Str, const std::vector<std::string> &Address);
         };
 
         // std::set<RepeatedSubstringByS> RSSet;

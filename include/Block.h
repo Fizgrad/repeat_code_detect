@@ -16,31 +16,26 @@ using std::vector;
 using std::string;
 
 
-
 class Block {
 public:
     string methodID;
-    int blockID;
+    unsigned int blockID;
     unsigned long long int address;
-    unordered_set<int> predecessor;
-    unordered_set<int> successor;
+    unordered_set<unsigned int> predecessors;
+    unordered_set<unsigned int> successors;
     vector<Instruction> instructions;
 
 
-    Block(string methodID, int blockID, unsigned long long int address);
+    Block(string methodID, unsigned int blockID, unsigned long long int address);
 
-    void addSuccessor(int id);
+    Block(const Block& block);
 
-    void addInstruction(const string &address, unsigned bytecode,unsigned int hashcode, const string &instruction);
+    void addSuccessor(unsigned int id);
 
-    void addPredecessor(int id);
-
-    Block(const Block &block);
+    void addPredecessor(unsigned int id);
 
     void print();
 
 };
-
-Block parseBlock(const string &methodID, vector<string> &input);
 
 #endif //SUFFIX_TREE_BLOCK_H

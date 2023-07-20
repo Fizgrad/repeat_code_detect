@@ -85,37 +85,22 @@ bool RepeatedInfos::RepeatedSubstringByS::operator==(
     return false;
 }
 
-void RepeatedInfos::RepeatedSubstringByS::print(const std::vector<std::string> &Str,
-                                                const std::vector<std::string> &Address) {
+void RepeatedInfos::RepeatedSubstringByS::print(const std::vector<Instruction> &instructions) {
     unsigned StringLen = Length;
     std::vector<std::string> RepeatStr;
+    std::vector<std::string> Str;
+    for (auto &i: instructions) {
+        Str.emplace_back(i.mnemonic);
+    }
     RepeatStr.insert(RepeatStr.end(), std::next(Str.begin(), StartIndices[0]),
                      std::next(Str.begin(), StartIndices[0] + StringLen));
     std::cout << "Len:\t" << Length << "\tRS:\t\n\n";
     for (auto &Via: RepeatStr) {
-        std::cout <<"\t"<< Via << "\n";
+        std::cout << "\t" << Via << "\n";
     }
     std::cout << "\nIndices:\t";
     for (unsigned SI: StartIndices) {
-        std::cout << std::hex << Address[SI] << " " << std::dec;
-    }
-    std::cout << std::endl;
-    std::cout << std::endl;
-}
-
-
-void RepeatedInfos::RepeatedSubstringByS::print(const std::vector<std::string> &Str) {
-    unsigned StringLen = Length;
-    std::vector<std::string> RepeatStr;
-    RepeatStr.insert(RepeatStr.end(), std::next(Str.begin(), StartIndices[0]),
-                     std::next(Str.begin(), StartIndices[0] + StringLen));
-    std::cout << "Len:\t" << Length << "\tRS:\t\n\n";
-    for (auto &Via: RepeatStr) {
-        std::cout <<"\t"<< Via << "\n";
-    }
-    std::cout << "\nIndices:\t";
-    for (unsigned SI: StartIndices) {
-        std::cout << SI << " ";
+        std::cout << "0x" << std::hex << instructions[SI].address << std::dec << " ";
     }
     std::cout << std::endl;
     std::cout << std::endl;

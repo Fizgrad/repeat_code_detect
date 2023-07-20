@@ -26,9 +26,17 @@ public:
     vector<Block> basicBlocks;
     bool hasBR = false;
 
-    explicit Function(string id, unsigned long long int address);
+    Function(string id, unsigned long long int address);
+
+    Function(string id, unsigned long long int address, const vector<Block> &blocks, bool br);
 
     Function(const Function &function);
+
+    vector<unsigned> getAllBytes();
+
+    vector<unsigned> getAllHashCode();
+
+    vector<Instruction> getAllInstructions();
 
 };
 
