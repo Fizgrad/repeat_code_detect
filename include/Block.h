@@ -8,10 +8,14 @@
 #include <vector>
 #include<string>
 #include <unordered_set>
+#include "Constant.h"
+#include "Instruction.h"
 
 using std::unordered_set;
 using std::vector;
 using std::string;
+
+
 
 class Block {
 public:
@@ -20,10 +24,7 @@ public:
     unsigned long long int address;
     unordered_set<int> predecessor;
     unordered_set<int> successor;
-    vector<unsigned> instructionBytecode;
-    vector<unsigned> instructionHash;
-    vector<string> instructions;
-    vector<string> instructionAddress;
+    vector<Instruction> instructions;
 
 
     Block(string methodID, int blockID, unsigned long long int address);

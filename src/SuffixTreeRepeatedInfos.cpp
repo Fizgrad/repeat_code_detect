@@ -10,7 +10,7 @@
 // This file implements the Suffix Tree Repeated Infos class.
 //
 //===----------------------------------------------------------------------===//
-#include "SuffixTreeRepeatedInfos.h"
+#include "../include/SuffixTreeRepeatedInfos.h"
 #include <iostream>
 #include <vector>
 

@@ -4,7 +4,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "SuffixTree.h"
+#include "../include/SuffixTree.h"
 #include <vector>
 
 using namespace llvm;

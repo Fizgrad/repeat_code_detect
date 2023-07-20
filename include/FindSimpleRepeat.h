@@ -26,6 +26,8 @@ public:
 
     void analysisAll();
 
+    void analysisHash();
+
     void writeToFile(const std::string & fileName);
 };
 

@@ -5,10 +5,15 @@
 #ifndef SUFFIX_TREE_FUNCTION_H
 #define SUFFIX_TREE_FUNCTION_H
 
+#include "Constant.h"
+#include <capstone/capstone.h>
+#include <capstone/arm64.h>
 #include <vector>
+#include <set>
 #include <iostream>
 #include "Block.h"
 
+using std::set;
 using std::string;
 using std::vector;
 
@@ -19,11 +24,11 @@ public:
     string methodID;
     unsigned long long int address;
     vector<Block> basicBlocks;
+    bool hasBR = false;
 
     explicit Function(string id, unsigned long long int address);
 
     Function(const Function &function);
-
 
 };
 

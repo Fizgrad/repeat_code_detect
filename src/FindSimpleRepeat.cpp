@@ -2,7 +2,7 @@
 // Created by david on 23-6-23.
 //
 
-#include "FindSimpleRepeat.h"
+#include "../include/FindSimpleRepeat.h"
 #include <fstream>
 
 using namespace llvm;
@@ -34,14 +34,62 @@ void FindSimpleRepeat::analysisAll() {
     std::vector<RepeatedInfos::RepeatedSubstringByS *> NewRSList =
             ReptInfo.RSList;
 
+    // 消除内部的冗余
+    std::vector<unsigned> StrMap = ST.Str;
+    RepeatedInfos::elimateInterOverlap(NewRSList, StrMap, 0);
+
     // 打印提取到的冗余信息
     for (RepeatedInfos::RepeatedSubstringByS *RSS: NewRSList) {
         RSS->print(allInstructionString,allInstructionAddress);
     }
 
+
+
+    // 统计收益
+    std::for_each(NewRSList.begin(), NewRSList.end(),
+                  [&](RepeatedInfos::RepeatedSubstringByS *RS) {
+                      totalBenefit += RS->getPredictBenefit(0);
+                      std::cout << "Test:" << RS->getPredictBenefit(0) << std::endl;
+                  });
+
+    std::cout << "Predict Benefit:" << totalBenefit << std::endl;
+}
+
+
+void FindSimpleRepeat::analysisHash() {
+
+    std::vector<unsigned> AllCode = file.getAllInstructionsHash();
+
+    codeCount = file.getAllBasicBlockCodeCount();
+
+    vector<string> allInstructionString = file.getAllInstructions();
+
+    vector<string> allInstructionAddress = file.getAllInstructionsAddress();
+
+//    std::cout << allInstructionAddress.size() << " " << allInstructionString.size() << " " << AllCode.size()
+//              << std::endl;
+
+//    file.print();
+
+    if (AllCode.empty()) {
+        return;
+    }
+    // 构造后缀树
+    SuffixTree ST(AllCode);
+
+    // 从后缀树提取冗余信息
+    RepeatedInfos ReptInfo(ST, 3);
+    std::vector<RepeatedInfos::RepeatedSubstringByS *> NewRSList =
+            ReptInfo.RSList;
+
     // 消除内部的冗余
     std::vector<unsigned> StrMap = ST.Str;
     RepeatedInfos::elimateInterOverlap(NewRSList, StrMap, 0);
+
+    // 打印提取到的冗余信息
+    for (RepeatedInfos::RepeatedSubstringByS *RSS: NewRSList) {
+        RSS->print(allInstructionString, allInstructionAddress);
+    }
 
     // 统计收益
     std::for_each(NewRSList.begin(), NewRSList.end(),

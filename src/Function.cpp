@@ -2,7 +2,7 @@
 // Created by david on 23-7-9.
 //
 
-#include "Function.h"
+#include "../include/Function.h"
 
 #include <utility>
 
@@ -14,3 +14,4 @@ Function::Function(const Function &function) : methodID(function.methodID), addr
     for (auto &i: function.basicBlocks)
         this->basicBlocks.push_back(i);
 }
+
