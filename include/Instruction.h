@@ -9,6 +9,7 @@
 #include <capstone/arm64.h>
 #include <vector>
 #include <string>
+#include <ostream>
 #include <set>
 
 using std::vector;
@@ -24,6 +25,8 @@ public:
     int operandsCount = 0;
     string mnemonic;
     set<string> regs;
+    string op_str;
+    string csInsnName;
 
     void parse(csh handle, cs_insn *insn);
 
@@ -34,6 +37,8 @@ public:
     Instruction(csh handle, cs_insn *insn);
 
     void calculateHashcode();
+
+    void outputInstructionDetail(std::ostream &out) const;
 
 private:
 

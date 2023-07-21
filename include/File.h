@@ -12,6 +12,7 @@
 #include <string>
 #include <algorithm>
 #include <vector>
+#include <glog/logging.h>
 #include "ControlFlowGraph.h"
 #include "Function.h"
 #include "Program.h"
@@ -24,8 +25,9 @@ public:
 
     explicit File(const std::string &inputFile) : file(inputFile) {
         if (!file.is_open()) {
-            std::cerr << "unable to open file " << std::endl;
+            LOG(ERROR) << "Unable to open file:\t" << inputFile;
         }
+        LOG(INFO) << "Successfully open file:\t" << inputFile;
     }
 
     ~File() {

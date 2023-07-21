@@ -87,17 +87,12 @@ bool RepeatedInfos::RepeatedSubstringByS::operator==(
 
 void RepeatedInfos::RepeatedSubstringByS::print(const std::vector<Instruction> &instructions) {
     unsigned StringLen = Length;
-    std::vector<std::string> RepeatStr;
-    std::vector<std::string> Str;
-    for (auto &i: instructions) {
-        Str.emplace_back(i.mnemonic);
-    }
-    RepeatStr.insert(RepeatStr.end(), std::next(Str.begin(), StartIndices[0]),
-                     std::next(Str.begin(), StartIndices[0] + StringLen));
+
     std::cout << "Len:\t" << Length << "\tRS:\t\n\n";
-    for (auto &Via: RepeatStr) {
-        std::cout << "\t" << Via << "\n";
+    for (int i = StartIndices[0]; i < StartIndices[0] + StringLen; ++i) {
+        instructions[i].outputInstructionDetail(std::cout);
     }
+    std::cout << "Repeat times:\t" << StartIndices.size() << "\n";
     std::cout << "\nIndices:\t";
     for (unsigned SI: StartIndices) {
         std::cout << "0x" << std::hex << instructions[SI].address << std::dec << " ";

@@ -4,6 +4,8 @@
 
 #include "../include/ControlFlowGraph.h"
 #include "../include/Constant.h"
+#include <cassert>
+#include <glog/logging.h>
 
 Function ControlFlowGraph::buildCFG() {
     if (this->methodCodeOffset.size() == 10) {
@@ -25,9 +27,17 @@ void ControlFlowGraph::parseInstruction() {
     csh handle;
     cs_insn *insn;
     size_t count;
+    if (this->methodCodeOffset.size() == 10) {
+        this->methodCodeOffset = this->methodCodeOffset.substr(2);
+    }
+
+    LOG(INFO) << "Parse function:\t" << this->methodID << "\t" << this->methodCodeOffset;
+    assert(this->methodCodeOffset.size() == 8);
+
+    this->address = std::stoull(this->methodCodeOffset, nullptr, 16);
 
     if (cs_open(CS_ARCH_ARM64, CS_MODE_ARM, &handle) != CS_ERR_OK) {
-        std::cerr << "cs_open(CS_ARCH_ARM64, CS_MODE_ARM, &handle) != CS_ERR_OK" << std::endl;
+        LOG(ERROR) << "cs_open(CS_ARCH_ARM64, CS_MODE_ARM, &handle) != CS_ERR_OK";
         return;
     }
 
@@ -37,7 +47,7 @@ void ControlFlowGraph::parseInstruction() {
         this->parseCode();
     }
 
-    count = cs_disasm(handle, code, this->bytecode.size() / 4, address, 0, &insn);
+    count = cs_disasm(handle, code, this->bytecode.size(), address, 0, &insn);
     if (count > 0) {
         bool flag = false;
         size_t j;
@@ -46,6 +56,9 @@ void ControlFlowGraph::parseInstruction() {
             Instruction instruction;
             instruction.parse(handle, &insn[j]);
             instructions.push_back(instruction);
+
+//            instruction.outputInstructionDetail(std::cout);
+
             if (flag) {
                 addLabel(insn[j].address);
                 flag = false;
@@ -53,7 +66,6 @@ void ControlFlowGraph::parseInstruction() {
 
             if (BranchSet.count(insn[j].id)) {
                 cs_arm64_op opr = insn[j].detail->arm64.operands[insn[j].detail->arm.op_count - 1];
-                assert(opr.type == ARM64_OP_IMM);
                 int64_t to = opr.imm;
                 address2Target[insn[j].address] = to;
                 isConditionalJumpOrBranch[insn[j].address] = true;
@@ -61,7 +73,6 @@ void ControlFlowGraph::parseInstruction() {
                 flag = true;
             } else if (CallSet.count(insn[j].id)) {
                 cs_arm64_op opr = insn[j].detail->arm64.operands[0];
-                assert(opr.type == ARM64_OP_IMM);
                 int64_t to = opr.imm;
                 addLabel(to);
                 address2Target[insn[j].address] = to;
@@ -69,7 +80,6 @@ void ControlFlowGraph::parseInstruction() {
 
             } else if (JumpSet.count(insn[j].id)) {
                 cs_arm64_op opr = insn[j].detail->arm64.operands[0];
-                assert(opr.type == ARM64_OP_IMM);
                 int64_t to = opr.imm;
                 addLabel(to);
                 isConditionalJumpOrBranch[insn[j].address] = false;
@@ -83,11 +93,11 @@ void ControlFlowGraph::parseInstruction() {
             }
         }
 
-        std::cout << "Code count:\t" << j << std::endl;
+        LOG(INFO) << "Code count:\t" << j;
 
         cs_free(insn, count);
     } else {
-        printf("ERROR: Failed to disassemble given code!\n");
+        LOG(ERROR) << "Failed to disassemble given code!";
     }
 
     cs_close(&handle);
@@ -95,10 +105,11 @@ void ControlFlowGraph::parseInstruction() {
 
 void ControlFlowGraph::parseCode() {
     auto len = this->bytecode.size();
-    this->code = new uint8_t[len];
-    for (auto i = 0; i < len; ++i) {
+    this->code = new uint8_t[len + 1];
+    for (auto i = 0; i <= len; ++i) {
         code[i] = static_cast<uint8_t>(this->bytecode[i]);
     }
+    code[len] = '\0';
 }
 
 void ControlFlowGraph::addLabel(unsigned long long int addr) {

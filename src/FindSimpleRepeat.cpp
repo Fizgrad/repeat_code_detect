@@ -17,25 +17,28 @@ void FindSimpleRepeat::analysisAll() {
 
     vector<Instruction> instructions = file.program.getAllInstructions();
 
-//    std::cout << allInstructionAddress.size() << " " << allInstructionString.size() << " " << AllCode.size()
-//              << std::endl;
-
-//    file.print();
 
     if (AllCode.empty()) {
         return;
     }
+
+    LOG(INFO) << "Construct suffix tree";
     // 构造后缀树
     SuffixTree ST(AllCode);
 
+    LOG(INFO) << "Find repeat info from suffix tree";
     // 从后缀树提取冗余信息
-    RepeatedInfos ReptInfo(ST, 3);
+    RepeatedInfos repeatedInfos(ST, 3);
     std::vector<RepeatedInfos::RepeatedSubstringByS *> NewRSList =
-            ReptInfo.RSList;
+            repeatedInfos.RSList;
 
+
+    LOG(INFO) << "Eliminate internal overlap";
     // 消除内部的冗余
     std::vector<unsigned> StrMap = ST.Str;
     RepeatedInfos::elimateInterOverlap(NewRSList, StrMap, 0);
+
+    LOG(INFO) << "Print repeat info";
 
     // 打印提取到的冗余信息
     for (RepeatedInfos::RepeatedSubstringByS *RSS: NewRSList) {
@@ -43,7 +46,7 @@ void FindSimpleRepeat::analysisAll() {
     }
 
 
-
+    LOG(INFO) << "Calculate benefits";
     // 统计收益
     std::for_each(NewRSList.begin(), NewRSList.end(),
                   [&](RepeatedInfos::RepeatedSubstringByS *RS) {
@@ -57,6 +60,7 @@ void FindSimpleRepeat::analysisAll() {
 
 void FindSimpleRepeat::analysisHash() {
 
+
     std::vector<unsigned> AllCode = file.program.getAllHashCode();
 
     codeCount = file.program.getCodeCount();
@@ -64,31 +68,35 @@ void FindSimpleRepeat::analysisHash() {
     vector<Instruction> instructions = file.program.getAllInstructions();
 
 
-//    std::cout << allInstructionAddress.size() << " " << allInstructionString.size() << " " << AllCode.size()
-//              << std::endl;
-
-//    file.print();
-
     if (AllCode.empty()) {
         return;
     }
+
+    LOG(INFO) << "Construct suffix tree";
     // 构造后缀树
     SuffixTree ST(AllCode);
 
+    LOG(INFO) << "Find repeat info from suffix tree";
     // 从后缀树提取冗余信息
-    RepeatedInfos ReptInfo(ST, 3);
+    RepeatedInfos repeatedInfos(ST, 3);
     std::vector<RepeatedInfos::RepeatedSubstringByS *> NewRSList =
-            ReptInfo.RSList;
+            repeatedInfos.RSList;
 
+
+    LOG(INFO) << "Eliminate internal overlap";
     // 消除内部的冗余
     std::vector<unsigned> StrMap = ST.Str;
     RepeatedInfos::elimateInterOverlap(NewRSList, StrMap, 0);
+
+    LOG(INFO) << "Print repeat info";
 
     // 打印提取到的冗余信息
     for (RepeatedInfos::RepeatedSubstringByS *RSS: NewRSList) {
         RSS->print(instructions);
     }
 
+
+    LOG(INFO) << "Calculate benefits";
     // 统计收益
     std::for_each(NewRSList.begin(), NewRSList.end(),
                   [&](RepeatedInfos::RepeatedSubstringByS *RS) {

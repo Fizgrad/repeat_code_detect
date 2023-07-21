@@ -16,7 +16,10 @@ void Instruction::parse(csh handle, cs_insn *insn) {
     for (int i = 0; i < bytesLen; ++i) {
         this->bytecode |= (insn->bytes[i] << (8 * i));
     }
+
     this->mnemonic = string(insn->mnemonic);
+    this->op_str = insn->op_str;
+    this->csInsnName = cs_insn_name(handle, insn->id);
 
     if (detail->arm64.op_count)
         this->operandsCount = detail->arm64.op_count;
@@ -55,7 +58,9 @@ Instruction::Instruction(const Instruction &instruction) : bytecode(instruction.
                                                            id(instruction.id),
                                                            operandsCount(instruction.operandsCount),
                                                            mnemonic(instruction.mnemonic),
-                                                           regs(instruction.regs) {
+                                                           regs(instruction.regs),
+                                                           csInsnName(instruction.csInsnName),
+                                                           op_str(instruction.op_str) {
 
 }
 
@@ -68,4 +73,14 @@ void Instruction::calculateHashcode() {
             hashcode = changeRegName(hashcode, std::stoi(reg), 0);
         }
     }
+}
+
+void Instruction::outputInstructionDetail(std::ostream &out) const {
+    out << "0x" << std::hex
+        << address << "\t"
+        << bytecode << "\t"
+        << mnemonic << "\t"
+        << op_str << "\t"
+        << csInsnName << "\t"
+        << hashcode << "\n";
 }
