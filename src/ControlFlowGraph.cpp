@@ -53,8 +53,7 @@ void ControlFlowGraph::parseInstruction() {
         size_t j;
         addLabel(address);
         for (j = 0; j < count; j++) {
-            Instruction instruction;
-            instruction.parse(handle, &insn[j]);
+            Instruction instruction(handle, &insn[j]);
             instructions.push_back(instruction);
 
 //            instruction.outputInstructionDetail(std::cout);

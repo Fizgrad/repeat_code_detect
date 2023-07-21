@@ -9,6 +9,7 @@
 #include <capstone/arm64.h>
 #include <vector>
 #include <string>
+#include <map>
 #include <ostream>
 #include <set>
 
@@ -42,11 +43,13 @@ public:
 
 private:
 
-    static string parseReg(const std::string &reg) {
-        if (reg.length() == 3 && std::islower(reg[0]) && std::isdigit(reg[1]) && std::isdigit(reg[2])) {
-            return reg.substr(1);
+    static std::pair<bool, int> parseReg(const std::string &reg) {
+        if (reg.length() == 3 && std::isalpha(reg[0]) && std::isdigit(reg[1]) && std::isdigit(reg[2])) {
+            return {true, std::stoi(reg.substr(1))};
+        } else if (reg.length() == 2 && std::isalpha(reg[0]) && std::isdigit(reg[1])) {
+            return {true, std::stoi(reg.substr(1))};
         } else {
-            return reg;
+            return {false, -1};
         }
     }
 

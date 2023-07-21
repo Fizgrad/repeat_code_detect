@@ -92,8 +92,8 @@ void RepeatedInfos::RepeatedSubstringByS::print(const std::vector<Instruction> &
     for (int i = StartIndices[0]; i < StartIndices[0] + StringLen; ++i) {
         instructions[i].outputInstructionDetail(std::cout);
     }
-    std::cout << "Repeat times:\t" << StartIndices.size() << "\n";
-    std::cout << "\nIndices:\t";
+    std::cout << std::dec << "\nRepeat times:\t" << StartIndices.size() << "\n";
+    std::cout << "Indices:\t";
     for (unsigned SI: StartIndices) {
         std::cout << "0x" << std::hex << instructions[SI].address << std::dec << " ";
     }

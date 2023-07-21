@@ -5,7 +5,7 @@
 
 #include <capstone/capstone.h>
 #include <capstone/arm64.h>
-
+#include <iostream>
 
 void Instruction::parse(csh handle, cs_insn *insn) {
     cs_detail *detail = insn->detail;
@@ -45,11 +45,11 @@ void Instruction::parse(csh handle, cs_insn *insn) {
                 break;
         }
     }
+    calculateHashcode();
 }
 
 Instruction::Instruction(csh handle, cs_insn *insn) {
     this->parse(handle, insn);
-    calculateHashcode();
 }
 
 Instruction::Instruction(const Instruction &instruction) : bytecode(instruction.bytecode),
@@ -69,8 +69,8 @@ void Instruction::calculateHashcode() {
     hashcode = bytecode;
     for (auto &i: regs) {
         auto reg = parseReg(i);
-        if (reg.size() == 2 && isalnum(reg[0]) && isalnum(reg[1])) {
-            hashcode = changeRegName(hashcode, std::stoi(reg), 0);
+        if (reg.first) {
+            hashcode = changeRegName(hashcode, reg.second, 31);
         }
     }
 }
@@ -79,8 +79,7 @@ void Instruction::outputInstructionDetail(std::ostream &out) const {
     out << "0x" << std::hex
         << address << "\t"
         << bytecode << "\t"
+        << hashcode << "\t"
         << mnemonic << "\t"
-        << op_str << "\t"
-        << csInsnName << "\t"
-        << hashcode << "\n";
+        << op_str << "\n";
 }
