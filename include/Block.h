@@ -6,6 +6,7 @@
 #define SUFFIX_TREE_BLOCK_H
 
 #include <vector>
+#include <iostream>
 #include<string>
 #include <unordered_set>
 #include "Constant.h"
@@ -34,7 +35,7 @@ public:
 
     void addPredecessor(unsigned int id);
 
-    void print();
+    void print(std::ostream& out);
 
 };
 

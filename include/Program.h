@@ -6,7 +6,7 @@
 #define SUFFIX_TREE_PROGRAM_H
 
 #include "Function.h"
-
+#include <ostream>
 class Program {
 public:
 
@@ -22,8 +22,9 @@ public:
 
     unsigned int getNumOfBlocks();
 
-
     unsigned int getNumOfFunctions();
+
+    void printBlocks(std::ostream& out);
 };
 
 

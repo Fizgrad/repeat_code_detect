@@ -99,3 +99,15 @@ unsigned int Program::getNumOfFunctions() {
 
     return funtions.size();
 }
+
+void Program::printBlocks(std::ostream &out) {
+
+    LOG(INFO) << "Program print basic blocks";
+
+    for (auto &f: funtions) {
+        for (auto &b: f.basicBlocks) {
+            b.print(out);
+        }
+    }
+
+}

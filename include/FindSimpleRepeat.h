@@ -28,6 +28,8 @@ public:
 
     void analysisAll();
 
+    void printDisassembleCode(const string& filename);
+
     void analysisHash();
 
     void writeToFile(const std::string &fileName);

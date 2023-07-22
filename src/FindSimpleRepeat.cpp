@@ -121,3 +121,15 @@ void FindSimpleRepeat::writeToFile(const std::string &fileName) {
     }
 
 }
+
+void FindSimpleRepeat::printDisassembleCode(const string &fileName) {
+    try {
+        std::ofstream out(fileName);
+        if (!out.is_open()) {
+            throw std::runtime_error("Unable to open file: " + fileName);
+        }
+        file.program.printBlocks(out);
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+    }
+}

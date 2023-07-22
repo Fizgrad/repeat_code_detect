@@ -4,7 +4,7 @@
 
 #include "../include/Block.h"
 #include <iomanip>
-#include <iostream>
+#include <ostream>
 #include <string>
 #include <utility>
 
@@ -22,29 +22,30 @@ void Block::addPredecessor(unsigned int id) {
     this->predecessors.insert(id);
 }
 
-void Block::print() {
+void Block::print(std::ostream &out) {
 
-    std::cout << "---------------------------" << std::endl;
-    std::cout << std::dec << "ID:\t" << blockID << std::endl;
+    out << "---------------------------" << std::endl;
+    out << std::dec << "ID:\t" << blockID << std::endl;
 
-    std::cout << "Address:\t0x" << std::hex << std::setw(8) << std::setfill('0') << address << std::endl;
+    out << "Address:\t0x" << std::hex << std::setw(8) << std::setfill('0') << address << std::dec << std::endl;
     for (const auto &predecessor: predecessors) {
-        std::cout << "Predecessor:\t" << predecessor << std::endl;
+        out << "Predecessor:\t" << predecessor << std::endl;
     }
 
     for (const auto &successor: successors) {
-        std::cout << "Successor:\t" << successor << std::endl;
+        out << "Successor:\t" << successor << std::endl;
     }
 
-    std::cout << "Code:" << std::endl;
+    out << "Code:" << std::endl;
     for (auto &instruction: instructions) {
-        std::cout << "\t" << std::hex
-                  << instruction.bytecode << "\t"
-                  << instruction.mnemonic << "\t"
-                  << instruction.hashcode << std::dec << std::endl;
+        out << "\t0x" << std::hex << std::setw(8) << std::setfill('0')
+            << instruction.address << "\t"
+            << instruction.bytecode << "\t"
+            << instruction.mnemonic << "\t"
+            << instruction.hashcode << std::dec << std::endl;
     }
 
-    std::cout << "---------------------------" << std::endl;
+    out << "---------------------------" << std::endl;
 
 }
 
