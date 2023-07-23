@@ -31,7 +31,7 @@ link_directories(${GLOG_LIB_DIR})
 
 find_package(Boost 1.58.0 REQUIRED COMPONENTS program_options)
 
-add_executable(suffix_tree main.cpp src/SuffixTree.cpp src/SuffixTreeRepeatedInfos.cpp src/File.cpp src/FindSimpleRepeat.cpp src/Function.cpp src/Block.cpp include/Block.h include/Constant.h include/Instruction.h src/Instruction.cpp src/ControlFlowGraph.cpp include/ControlFlowGraph.h src/Program.cpp include/Program.h)
+add_executable(suffix_tree main.cpp src/SuffixTree.cpp src/SuffixTreeRepeatedInfos.cpp src/File.cpp src/FindSimpleRepeat.cpp src/Function.cpp src/Block.cpp include/Block.h include/Constants.h include/Instruction.h src/Instruction.cpp src/ControlFlowGraph.cpp include/ControlFlowGraph.h src/Program.cpp include/Program.h)
 
 target_link_libraries(suffix_tree PRIVATE capstone)
 

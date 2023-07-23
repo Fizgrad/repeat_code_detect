@@ -3,7 +3,7 @@
 //
 
 #include "../include/ControlFlowGraph.h"
-#include "../include/Constant.h"
+#include "../include/Constants.h"
 #include <cassert>
 #include <glog/logging.h>
 

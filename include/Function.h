@@ -5,7 +5,7 @@
 #ifndef SUFFIX_TREE_FUNCTION_H
 #define SUFFIX_TREE_FUNCTION_H
 
-#include "Constant.h"
+#include "Constants.h"
 #include <capstone/capstone.h>
 #include <capstone/arm64.h>
 #include <vector>

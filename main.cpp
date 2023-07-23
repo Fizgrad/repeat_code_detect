@@ -50,9 +50,11 @@ int main(int argc, char *argv[]) {
     if (mode == "origin") {
         LOG(INFO) << "Start Origin Mode ";
         findSimpleRepeat.analysisAll();
+        findSimpleRepeat.printDisassembleCode("disassembled_code");
     } else if (mode == "hash") {
         LOG(INFO) << "Start Hash Mode ";
         findSimpleRepeat.analysisHash();
+        findSimpleRepeat.printDisassembleCode("disassembled_code");
     } else {
         LOG(ERROR) << "Invalid Mode";
         return 1;

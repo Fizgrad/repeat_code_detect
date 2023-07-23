@@ -41,8 +41,10 @@ void Block::print(std::ostream &out) {
         out << "\t0x" << std::hex << std::setw(8) << std::setfill('0')
             << instruction.address << "\t"
             << instruction.bytecode << "\t"
+            << instruction.hashcode << "\t"
             << instruction.mnemonic << "\t"
-            << instruction.hashcode << std::dec << std::endl;
+            << instruction.op_str << "\t"
+            << std::dec << std::endl;
     }
 
     out << "---------------------------" << std::endl;

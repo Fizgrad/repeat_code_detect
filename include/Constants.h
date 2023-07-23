@@ -2,8 +2,8 @@
 // Created by david on 23-7-20.
 //
 
-#ifndef SUFFIX_TREE_CONSTANT_H
-#define SUFFIX_TREE_CONSTANT_H
+#ifndef SUFFIX_TREE_CONSTANTS_H
+#define SUFFIX_TREE_CONSTANTS_H
 
 #include <capstone/capstone.h>
 #include <capstone/arm64.h>
@@ -21,4 +21,4 @@ const set<unsigned int> RetSet = {ARM64_INS_RET};
 const set<unsigned int> SoftBreak = {ARM64_INS_BRK};
 const set<unsigned int> CCAlwaysSet = {ARM64_CC_INVALID, ARM64_CC_AL, ARM64_CC_NV};
 
-#endif //SUFFIX_TREE_CONSTANT_H
+#endif //SUFFIX_TREE_CONSTANTS_H
