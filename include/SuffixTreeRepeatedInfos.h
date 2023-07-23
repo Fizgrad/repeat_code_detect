@@ -59,6 +59,8 @@ namespace llvm {
             // overlapping, can we get the suitable result
             unsigned getPredictBenefit(unsigned CreateFuncOverHead) const;
 
+            unsigned getHashPredictBenefit(const vector<Instruction>& instructions) const;
+
             void print(const std::vector<unsigned> &Str);
 
             void print(const std::vector<Instruction> &inst);

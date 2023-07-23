@@ -25,7 +25,7 @@ public:
     unsigned int id = 0;
     int operandsCount = 0;
     string mnemonic;
-    set<string> regs;
+    vector<string> regs;
     string op_str;
     string csInsnName;
 

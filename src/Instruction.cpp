@@ -29,16 +29,16 @@ void Instruction::parse(csh handle, cs_insn *insn) {
         switch (op->type) {
             case ARM64_OP_REG:
 //                printf("\t\toperands[%u].type: REG = %s\n", n, cs_reg_name(handle, op->reg));
-                this->regs.insert(cs_reg_name(handle, op->reg));
+                this->regs.emplace_back(cs_reg_name(handle, op->reg));
 
                 break;
             case ARM64_OP_MEM:
 //                printf("\t\toperands[%u].type: MEM\n", n);
                 if (op->mem.base != ARM64_REG_INVALID)
-                    this->regs.insert(cs_reg_name(handle, op->mem.base));
+                    this->regs.emplace_back(cs_reg_name(handle, op->mem.base));
 //                    printf("\t\t\toperands[%u].mem.base: REG = %s\n", n, cs_reg_name(handle, op->mem.base));
                 if (op->mem.index != ARM64_REG_INVALID)
-                    this->regs.insert(cs_reg_name(handle, op->mem.index));
+                    this->regs.emplace_back(cs_reg_name(handle, op->mem.index));
 //                    printf("\t\t\toperands[%u].mem.index: REG = %s\n", n, cs_reg_name(handle, op->mem.index));
 
             default:
@@ -52,17 +52,7 @@ Instruction::Instruction(csh handle, cs_insn *insn) {
     this->parse(handle, insn);
 }
 
-Instruction::Instruction(const Instruction &instruction) : bytecode(instruction.bytecode),
-                                                           address(instruction.address),
-                                                           hashcode(instruction.hashcode),
-                                                           id(instruction.id),
-                                                           operandsCount(instruction.operandsCount),
-                                                           mnemonic(instruction.mnemonic),
-                                                           regs(instruction.regs),
-                                                           csInsnName(instruction.csInsnName),
-                                                           op_str(instruction.op_str) {
-
-}
+Instruction::Instruction(const Instruction &instruction) = default;
 
 
 void Instruction::calculateHashcode() {

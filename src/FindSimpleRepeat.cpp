@@ -93,6 +93,7 @@ void FindSimpleRepeat::analysisHash() {
     // 打印提取到的冗余信息
     for (RepeatedInfos::RepeatedSubstringByS *RSS: NewRSList) {
         RSS->print(instructions);
+        RSS->getHashPredictBenefit(instructions);
     }
 
 

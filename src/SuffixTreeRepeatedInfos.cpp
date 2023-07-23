@@ -13,6 +13,8 @@
 #include "../include/SuffixTreeRepeatedInfos.h"
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <map>
 
 using namespace llvm;
 
@@ -21,7 +23,7 @@ using namespace llvm;
 
 unsigned RepeatedInfos::RepeatedSubstringByS::getPredictBenefit(
         unsigned CreateFuncOverHead) const {
-    if (StartIndices.empty() || StartIndices.size() < 2 || Length < 2) {
+    if (StartIndices.empty() || StartIndices.size() < 2 || Length <= 2) {
         return 0;
     }
     // Original:  Length*StartIndices.size()
@@ -99,6 +101,45 @@ void RepeatedInfos::RepeatedSubstringByS::print(const std::vector<Instruction> &
     }
     std::cout << std::endl;
     std::cout << std::endl;
+}
+
+unsigned RepeatedInfos::RepeatedSubstringByS::getHashPredictBenefit(const vector<Instruction> &instructions) const {
+    using std::map;
+    if (Length <= 4) {
+        return getPredictBenefit(0);
+    }
+    vector<unsigned> uniqueSequenceStartIndices;
+    map<unsigned, vector<unsigned> > getPattern;
+    map<vector<unsigned>, vector<unsigned>> times;
+    for (auto startIndex: this->StartIndices) {
+        vector<unsigned> bytes;
+        for (unsigned int i = startIndex; i < startIndex + Length; ++i) {
+            bytes.push_back(instructions[i].bytecode);
+        }
+        getPattern[startIndex] = bytes;
+        if (!times.count(bytes)) {
+            uniqueSequenceStartIndices.push_back(startIndex);
+        }
+        times[bytes].push_back(startIndex);
+    }
+    std::sort(std::begin(uniqueSequenceStartIndices), std::end(uniqueSequenceStartIndices),
+              [&](unsigned a, unsigned b) {
+                  return times[getPattern[a]].size() > times[getPattern[b]].size();
+              });
+
+    for (auto index: uniqueSequenceStartIndices) {
+        for (auto i: times[getPattern[index]]) {
+            std::cout << std::hex << "\t0x" << instructions[i].address << "\n";
+            for (int k = 0; k < Length; ++k) {
+                std::cout << "\t\t" << instructions[i + k].mnemonic << "\t" << instructions[i + k].op_str << std::endl;
+            }
+            std::cout << std::endl;
+        }
+    }
+
+    vector<string> regAccessSeq;
+
+    return 0;
 }
 
 bool RepeatedInfos::isOverlap(std::vector<unsigned> &SuffixIndices,
