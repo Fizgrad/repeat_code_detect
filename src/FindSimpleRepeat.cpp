@@ -86,14 +86,13 @@ void FindSimpleRepeat::analysisHash() {
     LOG(INFO) << "Eliminate internal overlap";
     // 消除内部的冗余
     std::vector<unsigned> StrMap = ST.Str;
-    RepeatedInfos::elimateInterOverlap(NewRSList, StrMap, 0);
+    RepeatedInfos::elimateInterOverlapHash(NewRSList, StrMap, 0,instructions);
 
     LOG(INFO) << "Print repeat info";
 
     // 打印提取到的冗余信息
     for (RepeatedInfos::RepeatedSubstringByS *RSS: NewRSList) {
         RSS->print(instructions);
-        RSS->getHashPredictBenefit(instructions);
     }
 
 
@@ -101,8 +100,8 @@ void FindSimpleRepeat::analysisHash() {
     // 统计收益
     std::for_each(NewRSList.begin(), NewRSList.end(),
                   [&](RepeatedInfos::RepeatedSubstringByS *RS) {
-                      totalBenefit += RS->getPredictBenefit(0);
-                      std::cout << "Test:" << RS->getPredictBenefit(0) << std::endl;
+                      totalBenefit += RS->getHashPredictBenefit(instructions);
+                      std::cout << "Test:" << RS->getHashPredictBenefit(instructions) << std::endl;
                   });
 
     std::cout << "Predict Benefit:" << totalBenefit << std::endl;

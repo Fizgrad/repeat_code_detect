@@ -153,6 +153,66 @@ namespace llvm {
             }
         }
 
+        static void elimateInterOverlapHash(
+                std::vector<RepeatedInfos::RepeatedSubstringByS *> &RSList,
+                std::vector<unsigned> &StrMap, unsigned CreateFunctionOverhead, vector<Instruction> instructions) {
+            // sort by benefit
+            std::sort(
+                    RSList.begin(), RSList.end(),
+                    [&](RepeatedInfos::RepeatedSubstringByS *LHS,
+                                              RepeatedInfos::RepeatedSubstringByS *RHS) {
+                        return LHS->getHashPredictBenefit(instructions) >
+                               RHS->getHashPredictBenefit(instructions);
+                    });
+
+            // iterate the list and remove all inter-overlap
+            for (std::vector<RepeatedInfos::RepeatedSubstringByS *>::iterator RSIt =
+                    RSList.begin();
+                 RSIt != RSList.end();) {
+                // If we outlined something that overlapped with a candidate in a previous
+                // step, then we can't outline from it.
+                llvm::RepeatedInfos::RepeatedSubstringByS *RSP = *RSIt;
+                // llvm::RepeatedInfos::RepeatedSubstringByS RS = *RSP;
+                unsigned StrLength = RSP->Length;
+
+                // std::erase_if(RSP->StartIndices, [&StrMap, &StrLength](unsigned
+                // &StartIdx) {
+                //   return std::any_of(
+                //       StrMap.begin() + StartIdx, StrMap.begin() + StartIdx + StrLength,
+                //       [](unsigned I) { return (I == static_cast<unsigned>(-1)); });
+                // });
+
+                for (auto It = RSP->StartIndices.begin();
+                     It != RSP->StartIndices.end();) {
+                    unsigned StartIdx = *It;
+                    if (std::any_of(StrMap.begin() + StartIdx,
+                                    StrMap.begin() + StartIdx + StrLength, [](unsigned I) {
+                                return (I == static_cast<unsigned>(-1));
+                            })) {
+                        It = RSP->StartIndices.erase(It);
+                    } else {
+                        It++;
+                    }
+                }
+
+                // If we made it unbeneficial to outline this function, skip it.
+                if (RSP->getHashPredictBenefit(instructions) < 1) {
+                    RSList.erase(RSIt);
+                    continue;
+                }
+                ++RSIt;
+
+                // If beneficial, record it in StrMap;
+                std::for_each(RSP->StartIndices.begin(), RSP->StartIndices.end(),
+                              [&StrMap, &StrLength](unsigned &StartIdx) {
+                                  std::for_each(
+                                          StrMap.begin() + StartIdx,
+                                          StrMap.begin() + StartIdx + StrLength,
+                                          [](unsigned &I) { I = static_cast<unsigned>(-1); });
+                              });
+            }
+        }
+
         static unsigned analysisOld(SuffixTree &ST,
                                     unsigned int RepeatedStrLenLowerLimit,
                                     unsigned CreateFuncOverhead) {

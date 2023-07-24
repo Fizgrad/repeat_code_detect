@@ -14,6 +14,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <numeric>
 #include <map>
 
 using namespace llvm;
@@ -23,7 +24,7 @@ using namespace llvm;
 
 unsigned RepeatedInfos::RepeatedSubstringByS::getPredictBenefit(
         unsigned CreateFuncOverHead) const {
-    if (StartIndices.empty() || StartIndices.size() < 2 || Length <= 2) {
+    if (StartIndices.empty() || StartIndices.size() < 2 || Length < 2) {
         return 0;
     }
     // Original:  Length*StartIndices.size()
@@ -105,41 +106,131 @@ void RepeatedInfos::RepeatedSubstringByS::print(const std::vector<Instruction> &
 
 unsigned RepeatedInfos::RepeatedSubstringByS::getHashPredictBenefit(const vector<Instruction> &instructions) const {
     using std::map;
-    if (Length <= 4) {
-        return getPredictBenefit(0);
+
+    if (StartIndices.size() < 2) {
+        return 0;
     }
-    vector<unsigned> uniqueSequenceStartIndices;
+
+//    std::cout << "StartIndices:\t";
+//
+//    for (auto i: StartIndices) {
+//        std::cout << i << "\t";
+//    }
+//    std::cout << std::endl;
+
+    vector<unsigned> uniquePatternStartIndices;
     map<unsigned, vector<unsigned> > getPattern;
-    map<vector<unsigned>, vector<unsigned>> times;
+    map<vector<unsigned>, vector<unsigned>> patternStartIndices;
+
+
     for (auto startIndex: this->StartIndices) {
         vector<unsigned> bytes;
         for (unsigned int i = startIndex; i < startIndex + Length; ++i) {
             bytes.push_back(instructions[i].bytecode);
         }
         getPattern[startIndex] = bytes;
-        if (!times.count(bytes)) {
-            uniqueSequenceStartIndices.push_back(startIndex);
+        if (!patternStartIndices.count(bytes)) {
+            uniquePatternStartIndices.push_back(startIndex);
         }
-        times[bytes].push_back(startIndex);
+        patternStartIndices[bytes].push_back(startIndex);
     }
-    std::sort(std::begin(uniqueSequenceStartIndices), std::end(uniqueSequenceStartIndices),
+
+
+    std::sort(std::begin(uniquePatternStartIndices), std::end(uniquePatternStartIndices),
               [&](unsigned a, unsigned b) {
-                  return times[getPattern[a]].size() > times[getPattern[b]].size();
+                  return patternStartIndices[getPattern[a]].size() > patternStartIndices[getPattern[b]].size();
               });
 
-    for (auto index: uniqueSequenceStartIndices) {
-        for (auto i: times[getPattern[index]]) {
-            std::cout << std::hex << "\t0x" << instructions[i].address << "\n";
-            for (int k = 0; k < Length; ++k) {
-                std::cout << "\t\t" << instructions[i + k].mnemonic << "\t" << instructions[i + k].op_str << std::endl;
-            }
-            std::cout << std::endl;
+    // print info
+//    for (auto index: uniquePatternStartIndices) {
+//        for (auto i: patternStartIndices[getPattern[index]]) {
+//            std::cout << std::hex << "\t0x" << instructions[i].address << "\n";
+//            for (int k = 0; k < Length; ++k) {
+//                std::cout << "\t\t" << instructions[i + k].mnemonic << "\t" << instructions[i + k].op_str << std::endl;
+//            }
+//            std::cout << std::endl;
+//        }
+//    }
+
+    // calculate the benefit of traditional way
+    vector<unsigned> originBenefits;
+    for (auto &i: uniquePatternStartIndices) {
+        auto &k = patternStartIndices.at(getPattern[i]);
+        if (k.size() == 1) {
+            originBenefits.push_back(0);
+            continue;
         }
+        int abstract = Length * k.size() - (1 + Length + k.size());
+        originBenefits.push_back(abstract > 0 ? abstract : 0);
     }
+    unsigned originBenefit = std::accumulate(std::begin(originBenefits), std::end(originBenefits), 0u);
+//    std::cout << "originBenefit\t" << originBenefit << std::endl;
+
+
 
     vector<string> regAccessSeq;
+    for (int i = 0; i < Length; ++i) {
+        for (auto &reg: instructions[uniquePatternStartIndices[0] + i].regs) {
+            regAccessSeq.emplace_back(reg);
+        }
+    }
+    vector<vector<string>> regAccessSeqs{regAccessSeq};
 
-    return 0;
+
+    vector<int> benefits;
+    benefits.push_back(originBenefits[0]);
+
+
+    for (unsigned index = 1; index < uniquePatternStartIndices.size(); ++index) {
+        vector<string> thisRegAccessSeq;
+        int times = patternStartIndices[getPattern[uniquePatternStartIndices[index]]].size();
+        for (int i = 0; i < Length; ++i) {
+            for (auto &reg: instructions[uniquePatternStartIndices[index] + i].regs) {
+                regAccessSeq.emplace_back(reg);
+            }
+        }
+
+        int maxBenefit = 0;
+        for (auto &regs: regAccessSeqs) {
+            map<string, string> regMap;
+            if (regs.size() != thisRegAccessSeq.size()) {
+                continue;
+            }
+            for (int i = 0; i < regs.size(); ++i) {
+                if (regs[i] == thisRegAccessSeq[i]) {
+                    continue;
+                } else {
+                    if (regMap.count(regs[i])) {
+                        continue;
+                    } else {
+                        regMap[regs[i]] = thisRegAccessSeq[i];
+                    }
+                }
+            }
+
+            unsigned renameCost = 0;
+            for (auto &k: regMap) {
+                if (regMap.count(k.second)) {
+                    renameCost += 2;
+                } else {
+                    renameCost += 4;
+                }
+            }
+
+            int benefit = times * Length - times * (1 + renameCost);
+            maxBenefit = std::max(benefit, maxBenefit);
+        }
+        if (maxBenefit <= originBenefits[index]) {
+            regAccessSeqs.emplace_back(thisRegAccessSeq);
+            benefits.emplace_back(originBenefits[index]);
+        } else {
+            benefits.emplace_back(maxBenefit);
+        }
+    }
+//        std::cout << "Hash Benefit\t" << std::accumulate(begin(benefits), end(benefits), 0) << std::endl;
+
+    int hashBenefit = std::accumulate(begin(benefits), end(benefits), 0);
+    return std::max(hashBenefit, static_cast<int>(originBenefit));
 }
 
 bool RepeatedInfos::isOverlap(std::vector<unsigned> &SuffixIndices,
