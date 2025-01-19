@@ -40,6 +40,7 @@ public:
 private:
 
     string methodID;
+    string methodCodeOffset;
 
     bool checkIsEOF() {
         if (file.is_open()) {

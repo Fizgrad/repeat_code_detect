@@ -73,7 +73,7 @@ unsigned int Program::getCodeCount() {
 
     LOG(INFO) << "Program Get Code Count";
 
-    unsigned int res;
+    unsigned int res = 0;
     for (auto &f: funtions) {
         for (auto &b: f.basicBlocks) {
             res += b.instructions.size();
@@ -86,7 +86,7 @@ unsigned int Program::getNumOfBlocks() {
 
     LOG(INFO) << "Program Get Block Count";
 
-    unsigned int res;
+    unsigned int res = 0;
     for (auto &f: funtions) {
         res += f.basicBlocks.size();
     }

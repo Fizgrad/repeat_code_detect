@@ -27,14 +27,14 @@ void ControlFlowGraph::parseInstruction() {
     csh handle;
     cs_insn *insn;
     size_t count;
-    if (this->methodCodeOffset.size() == 10) {
-        this->methodCodeOffset = this->methodCodeOffset.substr(2);
-    }
+    // if (this->methodCodeOffset.size() >= 8 ) {
+    //     this->methodCodeOffset = this->methodCodeOffset.substr(this->methodCodeOffset.size() - 8);
+    // }
 
     LOG(INFO) << "Parse function:\t" << this->methodID << "\t" << this->methodCodeOffset;
-    assert(this->methodCodeOffset.size() == 8);
+    // assert(this->methodCodeOffset.size() == 8);
 
-    this->address = std::stoull(this->methodCodeOffset, nullptr, 16);
+    // this->address = std::stoull(this->methodCodeOffset, nullptr, 16);
 
     if (cs_open(CS_ARCH_ARM64, CS_MODE_ARM, &handle) != CS_ERR_OK) {
         LOG(ERROR) << "cs_open(CS_ARCH_ARM64, CS_MODE_ARM, &handle) != CS_ERR_OK";

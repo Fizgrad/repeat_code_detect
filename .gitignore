@@ -3,3 +3,9 @@
 /cmake-build-debug/
 /.idea/
 /data/
+/log/
+/out/
+/so/
+/objdumps/
+/.cache
+/build/
